@@ -20,6 +20,11 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
+      - name: Ensure Required Assets Exist
+        run: |
+          if (-not (Test-Path "phrases")) { New-Item -ItemType Directory -Path "phrases" -Force }
+          if (-not (Test-Path "commands.yaml")) { New-Item -ItemType File -Path "commands.yaml" -Force }
+
       - name: Build EXE with PyInstaller
         run: |
           pyinstaller --noconfirm --onedir --windowed --icon="NONE" --add-data "commands.yaml;." --add-data "phrases;phrases" --hidden-import="vosk" --hidden-import="sounddevice" --hidden-import="soundfile" --hidden-import="yaml" --hidden-import="pycaw" --hidden-import="customtkinter" --hidden-import="pystray" --hidden-import="PIL" main.py
