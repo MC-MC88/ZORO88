@@ -1,0 +1,58 @@
+commands:
+  - action: force_close_all_windows
+    patterns:
+      - "close all windows"
+      - "close everything"
+      - "kill all apps"
+    confirm: true
+
+  - action: close_active_window
+    patterns:
+      - "close this window"
+      - "close the window"
+    confirm: false
+
+  - action: lock_screen
+    patterns:
+      - "lock pc"
+      - "lock computer"
+    confirm: false
+
+  - action: shutdown_pc
+    patterns:
+      - "shutdown pc"
+      - "shut down"
+    confirm: true
+
+  - action: restart_pc
+    patterns:
+      - "restart pc"
+      - "reboot"
+    confirm: true
+
+  - action: sleep_pc
+    patterns:
+      - "sleep pc"
+      - "suspend"
+    confirm: true
+
+  - action: set_theme_light
+    patterns:
+      - "bright mode"
+      - "light mode"
+    confirm: false
+
+  - action: set_theme_dark
+    patterns:
+      - "dark mode"
+    confirm: false
+
+  - action: get_time
+    patterns:
+      - "what time is it"
+    confirm: false
+
+  - action: get_date
+    patterns:
+      - "what is the date"
+    confirm: false
