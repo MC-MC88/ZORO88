@@ -75,7 +75,7 @@ threading.Thread(target=_audio_player_thread, daemon=True).start()
 def play_phrase(name):
     _playing.set()
     _audio_queue.put(name)
-    if _ui_callback: _ui_callback(f"Speaking: {name}")
+    if _ui_callback: _ui_callback(f"Speaking: {_FALLBACK_TEXT.get(name, name)}")
 
 def ensure_model():
     if MODEL_DIR.is_dir() and any(MODEL_DIR.iterdir()): return
@@ -116,6 +116,9 @@ def execute_action(name):
 def process_text(text):
     text = text.lower().strip()
     if not text: return
+    
+    if _ui_callback: _ui_callback(f"Heard: {text}")
+    
     now = time.time()
 
     if _state["pending_action"]:
@@ -135,11 +138,11 @@ def process_text(text):
         return
 
     if not _state["is_awake"]:
-        if "zoro wake up" in text or "wake up zoro" in text:
+        if "zoro" in text and ("wake" in text or "up" in text or "week" in text):
             _state["is_awake"] = True
             _state["last_interaction"] = now
             play_phrase("ready")
-            if _ui_callback: _ui_callback("Awake")
+            if _ui_callback: _ui_callback("Status: Awake")
         return
 
     _state["last_interaction"] = now
@@ -224,4 +227,4 @@ def main_loop(ui_callback):
             if _state["is_awake"] and time.time() - _state["last_interaction"] > SLEEP_TIMEOUT:
                 _state["is_awake"] = False
                 play_phrase("sleep")
-                if _ui_callback: _ui_callback("Sleeping")
+                if _ui_callback: _ui_callback("Status: Sleeping")
