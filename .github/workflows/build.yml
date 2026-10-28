@@ -26,22 +26,7 @@ jobs:
           if (-not (Test-Path "commands.yaml")) { New-Item -ItemType File -Path "commands.yaml" -Force }
 
       - name: Build EXE with PyInstaller
-        run: |
-          pyinstaller --noconfirm --onedir --console --icon="NONE" ^
-          --add-data "commands.yaml;." ^
-          --add-data "phrases;phrases" ^
-          --collect-all vosk ^
-          --collect-all sounddevice ^
-          --collect-all soundfile ^
-          --collect-all numpy ^
-          --collect-all customtkinter ^
-          --collect-all pystray ^
-          --collect-all PIL ^
-          --collect-all pycaw ^
-          --hidden-import="win32gui" ^
-          --hidden-import="win32api" ^
-          --hidden-import="win32.lib.win32con" ^
-          main.py
+        run: pyinstaller --noconfirm --onedir --console --icon="NONE" --add-data "commands.yaml;." --add-data "phrases;phrases" --collect-all vosk --collect-all sounddevice --collect-all soundfile --collect-all numpy --collect-all customtkinter --collect-all pystray --collect-all PIL --collect-all pycaw --hidden-import="win32gui" --hidden-import="win32api" --hidden-import="win32.lib.win32con" main.py
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
