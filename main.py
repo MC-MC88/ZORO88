@@ -25,6 +25,11 @@ class ShortcutDialog(ctk.CTkToplevel):
         self.title("Shortcut Details")
         self.geometry("400x350")
         self.resizable(False, False)
+        
+        self.transient(parent)
+        self.grab_set()
+        self.focus()
+
         self.callback = callback
         self.shortcut = shortcut
 
@@ -67,7 +72,7 @@ class ShortcutDialog(ctk.CTkToplevel):
         img = self.img_var.get().strip()
 
         if not name or not path:
-            messagebox.showerror("Error", "Name and File Path are required.")
+            messagebox.showerror("Error", "Name and File Path are required.", parent=self)
             return
 
         self.callback({"name": name, "path": path, "image": img}, self.shortcut)
@@ -82,6 +87,7 @@ class ZoroDashboard(ctk.CTk):
         self.minsize(900, 600)
 
         self.shortcuts = self.load_config()
+        self.current_dialog = None
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -173,10 +179,10 @@ class ZoroDashboard(ctk.CTk):
             json.dump(self.shortcuts, f, indent=4)
 
     def add_shortcut(self):
-        ShortcutDialog(self, self.save_shortcut_callback)
+        self.current_dialog = ShortcutDialog(self, self.save_shortcut_callback)
 
     def edit_shortcut(self, shortcut):
-        ShortcutDialog(self, self.save_shortcut_callback, shortcut)
+        self.current_dialog = ShortcutDialog(self, self.save_shortcut_callback, shortcut)
 
     def save_shortcut_callback(self, data, old_shortcut):
         if old_shortcut:
