@@ -20,12 +20,21 @@ from app_scanner import get_installed_apps
 
 if getattr(sys, 'frozen', False):
     BASE = Path(sys.executable).parent
+    INTERNAL = BASE / "_internal" if (BASE / "_internal").exists() else BASE
 else:
     BASE = Path(__file__).parent
+    INTERNAL = BASE
 
-PHRASES = BASE / "phrases"
-MODEL_DIR = BASE / "vosk-model-small-en-us-0.15"
-COMMANDS_FILE = BASE / "commands.yaml"
+def get_asset(path_name):
+    p = BASE / path_name
+    if p.exists(): return p
+    p = INTERNAL / path_name
+    if p.exists(): return p
+    return BASE / path_name
+
+PHRASES = get_asset("phrases")
+COMMANDS_FILE = get_asset("commands.yaml")
+MODEL_DIR = get_asset("vosk-model-small-en-us-0.15")
 
 WAKE_WORD = "zoro"
 SLEEP_TIMEOUT = 300
@@ -86,6 +95,9 @@ def ensure_model():
     tmp.unlink()
 
 def load_commands():
+    if not COMMANDS_FILE.exists():
+        print(f"  [error] {COMMANDS_FILE} not found!")
+        return []
     with open(COMMANDS_FILE, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)["commands"]
 
@@ -201,6 +213,11 @@ def main_loop(ui_callback):
     vosk.SetLogLevel(-1)
     _model = vosk.Model(str(MODEL_DIR))
     _commands = load_commands()
+    
+    if not _commands:
+        if _ui_callback: _ui_callback("Error: commands.yaml missing!")
+        return
+
     _installed_apps = get_installed_apps()
 
     audio_q = queue.Queue()
